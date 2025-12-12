@@ -29,7 +29,7 @@ jobs:
               with:
                   node-version: "18"
                   cache: "npm"
-                  cache-dependency-path: "docs/package-lock.json"
+                  cache-dependency-path: "docs/package.json"
 
             - name: Setup Pages
               uses: actions/configure-pages@v4
@@ -37,7 +37,7 @@ jobs:
             - name: Install dependencies
               run: |
                   cd docs
-                  npm ci
+                  npm install
 
             - name: Build documentation
               run: |
