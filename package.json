@@ -1,6 +1,6 @@
 {
     "name": "@gsomenzi/policy-based-authorization-system",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A policy-based authorization system for Node.js and NestJS applications",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
