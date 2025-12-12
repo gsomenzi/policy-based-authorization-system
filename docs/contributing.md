@@ -7,7 +7,7 @@ We welcome contributions!
 - Write tests and ensure code is linted
 - Open a pull request with a clear description
 
-For major changes, open an issue to discuss your proposal first.
+For major changes, open an issue to discuss your proposal.
 
 ### Code Style
 - Use TypeScript
