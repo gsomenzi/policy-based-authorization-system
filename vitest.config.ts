@@ -2,11 +2,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
     test: {
-        globals: false,
+        globals: true,
         environment: "node",
-        passWithNoTests: false,
-        coverage: {
-            provider: "istanbul",
-        },
+        coverage: { reporter: ["text", "lcov"] },
     },
 });
