@@ -3,14 +3,44 @@
 Install the package:
 
 ```bash
-npm install @gsomenzi/policy-based-authorization-system
+npm install @gsomenzi/policy-based-authorization-system @nestjs/common
 ```
 
-### Example
+::: tip
+NestJS already includes `reflect-metadata`, so no additional installation is needed.
+:::
+
+### Step 1: Create Your Policy
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { Authorizable, AuthorizationPolicy, AuthorizationContext, AuthorizationResult, AuthorizationActions } from "@gsomenzi/policy-based-authorization-system";
+
+@Authorizable("Document") 
+export class Document {
+  constructor(public id: string, public userId: string) {}
+}
+
+@Injectable()
+export class DocumentReadPolicy extends AuthorizationPolicy<Document> {
+  readonly resourceClass = Document;
+  readonly action = AuthorizationActions.READ;
+
+  can(context: AuthorizationContext<Document>): AuthorizationResult {
+    const { resource, user } = context;
+    return resource.userId === user.id 
+      ? this.allow() 
+      : this.deny("Not the owner");
+  }
+}
+```
+
+### Step 2: Register the Module
 
 ```typescript
 import { Module } from "@nestjs/common";
 import { PolicyBasedAuthorizationModule } from "@gsomenzi/policy-based-authorization-system/nestjs";
+import { DocumentReadPolicy } from './policies/document-read.policy';
 
 @Module({
   imports: [
@@ -22,4 +52,35 @@ import { PolicyBasedAuthorizationModule } from "@gsomenzi/policy-based-authoriza
 export class AppModule {}
 ```
 
-You can now inject the authorization service using the provided token and use it in your controllers/services.
+### Step 3: Use in Controllers/Services
+
+```typescript
+import { Controller, Get, Inject } from '@nestjs/common';
+import { AUTHZ_SERVICE } from '@gsomenzi/policy-based-authorization-system/nestjs';
+import type { AuthorizationService } from '@gsomenzi/policy-based-authorization-system';
+
+@Controller('documents')
+export class DocumentsController {
+  constructor(
+    @Inject(AUTHZ_SERVICE) 
+    private readonly authzService: AuthorizationService
+  ) {}
+
+  @Get(':id')
+  async getDocument(@Param('id') id: string, @Request() req) {
+    const document = await this.findDocument(id);
+    const user = req.user; // From your auth system
+    
+    const result = await this.authzService.authorize(
+      user, 
+      AuthorizationActions.READ, 
+      document
+    );
+    
+    if (!result.isAllowed) {
+      throw new ForbiddenException(result.reason);
+    }
+    
+    return document;
+  }
+}

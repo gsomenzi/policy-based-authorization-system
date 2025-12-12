@@ -1,6 +1,6 @@
-# Policy-Based Authorization System Documentation
+# Policy-Based Authorization System
 
-Welcome to the complete documentation for the Policy-Based Authorization System. This guide covers the architecture, extensibility, installation, and usage examples for both Node.js and NestJS environments.
+A flexible and extensible authorization framework for Node.js and NestJS applications, built with Clean Architecture principles.
 
 ---
 

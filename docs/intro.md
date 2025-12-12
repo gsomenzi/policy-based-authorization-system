@@ -25,10 +25,12 @@ features:
     details: Seamless integration with NestJS dependency injection and module system.
 ---
 
-This project provides a flexible, extensible, and type-safe authorization framework for Node.js and NestJS applications, inspired by Clean Architecture principles.
+A flexible, extensible, and type-safe authorization framework for Node.js and NestJS applications, inspired by Clean Architecture principles.
 
-- **Easy to extend**: Add new policies and actions with minimal effort.
-- **Type-safe**: Leverage TypeScript for robust, maintainable code.
-- **Clean Architecture**: Decoupled domain, infrastructure, and application layers.
+## Why Use This Library?
 
-Explore the sections to learn about the architecture, usage, extensibility, and development guidelines.
+- **Easy to extend**: Add new policies and actions with minimal effort
+- **Type-safe**: Leverage TypeScript for robust, maintainable code  
+- **Clean Architecture**: Decoupled domain, infrastructure, and application layers
+- **NestJS Integration**: First-class support for NestJS applications
+- **Flexible Policies**: Define custom authorization rules for any resource

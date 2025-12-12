@@ -3,12 +3,15 @@
 Install the package:
 
 ```bash
-npm install @gsomenzi/policy-based-authorization-system
+npm install @gsomenzi/policy-based-authorization-system reflect-metadata
 ```
 
 ### Example
 
 ```typescript
+// Required for decorators to work
+import 'reflect-metadata';
+
 import { Authorizable, AuthorizationPolicy, AuthorizationContext, AuthorizationResult, AuthorizationActions, PolicyBasedAuthorizationService } from "@gsomenzi/policy-based-authorization-system";
 
 @Authorizable("Document")

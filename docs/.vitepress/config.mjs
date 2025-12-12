@@ -22,7 +22,6 @@ export default defineConfig({
                 text: "Architecture",
                 items: [
                     { text: "Overview", link: "/architecture/overview" },
-                    { text: "Diagram", link: "/architecture/diagram" },
                     { text: "Decisions", link: "/architecture/decisions" },
                 ],
             },
