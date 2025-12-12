@@ -23,7 +23,7 @@ class Store {
 class TestStorePolicy extends AuthorizationPolicy<Store> {
     readonly resourceClass = Store;
     readonly action = AuthorizationActions.READ;
-
+    // biome-ignore lint/suspicious/noExplicitAny: context can be any
     can(context: any) {
         if (!this.isOwner(context.target.resource, context.user)) {
             return this.deny("User does not own the store");
