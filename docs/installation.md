@@ -61,7 +61,7 @@ Add these configurations to your `tsconfig.json`:
 ```
 
 ::: warning Important
-**`experimentalDecorators`** and **`emitDecoratorMetadata`** are required for the `@Authorizable` decorator to work properly.
+**`experimentalDecorators`** is required for the `@Authorizable` decorator. **`emitDecoratorMetadata`** is optional for this library (keep it if your project needs it).
 :::
 
 ## Verify Installation
@@ -82,8 +82,7 @@ console.log(AuthorizationResult.allow()); // Should work without errors
 If you get errors like *"Unable to resolve signature of class decorator"*, ensure you have:
 
 1. `experimentalDecorators: true` in tsconfig.json
-2. `emitDecoratorMetadata: true` in tsconfig.json
-3. `reflect-metadata` imported at the top of your main file
+2. `reflect-metadata` imported at the top of your main file
 
 ### Module Resolution Issues
 

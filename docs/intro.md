@@ -1,36 +1,23 @@
----
-# https://vitepress.dev/reference/default-theme-home-page
-layout: home
+# Introduction
 
-hero:
-  name: "Policy-Based Authorization System"
-  text: "Flexible & Type-Safe Authorization"
-  tagline: "Clean Architecture principles for Node.js and NestJS applications"
-  actions:
-    - theme: brand
-      text: Get Started
-      link: /intro
-    - theme: alt
-      text: View on GitHub
-      link: https://github.com/gsomenzi/policy-based-authorization-system
+Policy-Based Authorization System is a flexible and extensible library for implementing fine-grained access control in Node.js and NestJS applications.
 
-features:
-  - title: 🔒 Policy-Based
-    details: Define fine-grained access control policies for your resources with clean, maintainable code.
-  - title: 🏗️ Clean Architecture
-    details: Built with Clean Architecture principles, ensuring separation of concerns and testability.
-  - title: 🔧 Type-Safe
-    details: Leverage TypeScript for robust, maintainable authorization logic with full type safety.
-  - title: ⚡ NestJS Integration
-    details: Seamless integration with NestJS dependency injection and module system.
----
+## Motivation
 
-A flexible, extensible, and type-safe authorization framework for Node.js and NestJS applications, inspired by Clean Architecture principles.
+This package was created primarily to build a simple and flexible authorization system for NestJS that can also be used in plain Node.js projects.
 
-## Why Use This Library?
+The main motivation was to avoid adopting CASL for this use case: while powerful, it can introduce extra complexity and make authorization flows harder to debug.
 
-- **Easy to extend**: Add new policies and actions with minimal effort
-- **Type-safe**: Leverage TypeScript for robust, maintainable code  
-- **Clean Architecture**: Decoupled domain, infrastructure, and application layers
-- **NestJS Integration**: First-class support for NestJS applications
-- **Flexible Policies**: Define custom authorization rules for any resource
+It is designed around a small set of concepts:
+
+- **Authorization Policies**: encapsulate the authorization rules for an action on a resource.
+- **Authorization Service**: finds the right policy and evaluates authorization requests.
+- **Resource Decorator**: marks a class as an authorizable resource to enable type-safe matching.
+- **NestJS Integration**: register policies via a module and leverage dependency injection.
+
+## Next Steps
+
+- Install the package: [Installation](/installation)
+- Use it in Node.js: [Node.js Usage](/usage/nodejs)
+- Use it in NestJS: [NestJS Usage](/usage/nestjs)
+- Understand the design: [Architecture Overview](/architecture/overview)

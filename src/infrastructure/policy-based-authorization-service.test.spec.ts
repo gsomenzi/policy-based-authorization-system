@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { Authorizable } from "../domain/decorators/authorizable.decorator";
 import type { AuthorizationService } from "../domain/ports/authorization-service";
 import { ResourceAuthorizationPolicy } from "../domain/ports/resource-authorization-policy";
-import { AuthorizationActions } from "../domain/value-objects/authorization-context";
+import { AuthorizationActions, AuthorizationContext } from "../domain/value-objects/authorization-context";
 import { PolicyBasedAuthorizationService } from "./policy-based-authorization-service";
 
 type User = {
@@ -120,5 +120,55 @@ describe("PolicyBasedAuthorizationService", () => {
         const result = await service.authorize(user, AuthorizationActions.READ, null);
         expect(result.isAllowed).toBe(false);
         expect(result.reason).toBe("Resource not found");
+    });
+
+    it("should match policies case-insensitively by resourceType", async () => {
+        @Authorizable("StoRe")
+        class MixedCaseStore {
+            constructor(public userId: string) {}
+        }
+
+        class MixedCaseStorePolicy extends ResourceAuthorizationPolicy<User, MixedCaseStore> {
+            readonly resourceClass = MixedCaseStore;
+            readonly action = AuthorizationActions.READ;
+
+            authorize(context: AuthorizationContext<User, MixedCaseStore>) {
+                return context.resource.userId === context.user.id ? this.allow() : this.deny("Not the owner");
+            }
+        }
+
+        const mixedCasePolicy = new MixedCaseStorePolicy();
+        service.registerPolicy(mixedCasePolicy);
+
+        const retrieved = service.getPolicy(AuthorizationActions.READ, "store");
+        expect(retrieved).toBe(mixedCasePolicy);
+
+        const result = await service.authorize(user, AuthorizationActions.READ, new MixedCaseStore(user.id));
+        expect(result.isAllowed).toBe(true);
+    });
+
+    it("should override an existing policy when registering a new one with the same key", async () => {
+        class AllowAllStorePolicy extends ResourceAuthorizationPolicy<User, Store> {
+            readonly resourceClass = Store;
+            readonly action = AuthorizationActions.READ;
+            authorize() {
+                return this.allow();
+            }
+        }
+
+        class DenyAllStorePolicy extends ResourceAuthorizationPolicy<User, Store> {
+            readonly resourceClass = Store;
+            readonly action = AuthorizationActions.READ;
+            authorize() {
+                return this.deny("Always deny");
+            }
+        }
+
+        service.registerPolicy(new AllowAllStorePolicy());
+        service.registerPolicy(new DenyAllStorePolicy());
+
+        const result = await service.authorize(user, AuthorizationActions.READ, storeFromUser);
+        expect(result.isAllowed).toBe(false);
+        expect(result.reason).toBe("Always deny");
     });
 });

@@ -3,8 +3,11 @@
 ### `@Authorizable(resourceType: string)`
 Decorator to mark a class as an authorizable resource.
 
-### `AuthorizationPolicy<T>`
-Abstract class to implement custom policies. Requires `resourceClass`, `action`, and `can()` method.
+### `ResourceAuthorizationPolicy<USER, RESOURCE>`
+Abstract class to implement resource-based policies. Requires `resourceClass`, `action`, and `authorize()` method.
+
+### `AuthorizationActions` / `AuthorizationAction`
+Built-in CRUD actions and the corresponding action type used by the service.
 
 ### `PolicyBasedAuthorizationService`
 Central service to register policies and evaluate authorization.

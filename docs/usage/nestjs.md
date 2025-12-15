@@ -14,7 +14,15 @@ NestJS already includes `reflect-metadata`, so no additional installation is nee
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { Authorizable, AuthorizationPolicy, AuthorizationContext, AuthorizationResult, AuthorizationActions } from "@gsomenzi/policy-based-authorization-system";
+import {
+  Authorizable,
+  ResourceAuthorizationPolicy,
+  AuthorizationContext,
+  AuthorizationResult,
+  AuthorizationActions,
+} from "@gsomenzi/policy-based-authorization-system";
+
+type User = { id: string };
 
 @Authorizable("Document") 
 export class Document {
@@ -22,11 +30,11 @@ export class Document {
 }
 
 @Injectable()
-export class DocumentReadPolicy extends AuthorizationPolicy<Document> {
+export class DocumentReadPolicy extends ResourceAuthorizationPolicy<User, Document> {
   readonly resourceClass = Document;
   readonly action = AuthorizationActions.READ;
 
-  can(context: AuthorizationContext<Document>): AuthorizationResult {
+  authorize(context: AuthorizationContext<User, Document>): AuthorizationResult {
     const { resource, user } = context;
     return resource.userId === user.id 
       ? this.allow() 
@@ -55,9 +63,10 @@ export class AppModule {}
 ### Step 3: Use in Controllers/Services
 
 ```typescript
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, Inject, Param, Req } from '@nestjs/common';
 import { AUTHZ_SERVICE } from '@gsomenzi/policy-based-authorization-system/nestjs';
 import type { AuthorizationService } from '@gsomenzi/policy-based-authorization-system';
+import { AuthorizationActions } from '@gsomenzi/policy-based-authorization-system';
 
 @Controller('documents')
 export class DocumentsController {
@@ -67,7 +76,7 @@ export class DocumentsController {
   ) {}
 
   @Get(':id')
-  async getDocument(@Param('id') id: string, @Request() req) {
+  async getDocument(@Param('id') id: string, @Req() req: any) {
     const document = await this.findDocument(id);
     const user = req.user; // From your auth system
     
