@@ -1,11 +1,14 @@
 import "reflect-metadata";
 import { beforeEach, describe, expect, it } from "vitest";
 import { Authorizable } from "../domain/decorators/authorizable.decorator";
-import { AuthorizationPolicy } from "../domain/ports/authorization-policy";
 import type { AuthorizationService } from "../domain/ports/authorization-service";
+import { ResourceAuthorizationPolicy } from "../domain/ports/resource-authorization-policy";
 import { AuthorizationActions } from "../domain/value-objects/authorization-context";
-import type { AuthorizationUser } from "../domain/value-objects/authorization-user";
 import { PolicyBasedAuthorizationService } from "./policy-based-authorization-service";
+
+type User = {
+    id: string;
+};
 
 @Authorizable("store")
 @Authorizable("store")
@@ -20,22 +23,25 @@ class Store {
     }
 }
 
-class TestStorePolicy extends AuthorizationPolicy<Store> {
+class TestStorePolicy extends ResourceAuthorizationPolicy<User, Store> {
     readonly resourceClass = Store;
     readonly action = AuthorizationActions.READ;
     // biome-ignore lint/suspicious/noExplicitAny: context can be any
-    can(context: any) {
-        if (!this.isOwner(context.target.resource, context.user)) {
+    authorize(context: any) {
+        if (!this.isOwner(context.resource, context.user)) {
             return this.deny("User does not own the store");
         }
         return this.allow();
+    }
+    isOwner(resource: Store, user: User): boolean {
+        return resource.userId === user.id;
     }
 }
 
 describe("PolicyBasedAuthorizationService", () => {
     let service: AuthorizationService;
-    let policy: AuthorizationPolicy;
-    let user: AuthorizationUser;
+    let policy: ResourceAuthorizationPolicy;
+    let user: User;
     let storeFromUser: Store;
     let storeFromAnotherUser: Store;
     beforeEach(() => {
@@ -94,10 +100,10 @@ describe("PolicyBasedAuthorizationService", () => {
             id = "1";
         }
 
-        class InvalidPolicy extends AuthorizationPolicy<UndecoratedResource> {
+        class InvalidPolicy extends ResourceAuthorizationPolicy<UndecoratedResource> {
             resourceClass = UndecoratedResource;
             action = AuthorizationActions.READ;
-            can = () => ({ isAllowed: true });
+            authorize = () => ({ isAllowed: true });
         }
 
         expect(() => service.registerPolicy(new InvalidPolicy())).toThrow(
